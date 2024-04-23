@@ -1,6 +1,9 @@
 <?php
 
 include_once "connection.php";
+include_once "colores.php";
+//$colores = ["blue"=>"azul", "green"=>"verde", "red"=>"vermelho", "black"=>"negro", "yellow"=>"amarelo"];
+
 
 $select = "SELECT * FROM info_colores";
 
@@ -20,10 +23,11 @@ if ($_POST) {
     var_dump($_POST);
     $color = $_POST["color"];
     $usuario = $_POST["usuario"];
+   
 
-    $insert = "insert into info_colores (color, usuario) values (?,?)";
+    $insert = "insert into info_colores (color, usuario, color_user) values (?,?,?)";
     $insert_prepare = $conn->prepare($insert);
-    $insert_prepare->execute([$color, $usuario]);
+    $insert_prepare->execute([$color, $usuario, $colores[$color]]);
 
     $insert_prepare = null;
     $conn = null;
@@ -46,48 +50,83 @@ if ($_POST) {
 <body>
 
     <header>
-        <h1>hola</h1>
+        <h1 class="text-center">Nuetro colores favoritos</h1>
     </header>
 
     <main class="container">
-        <div class="row">
+        <div class="row gx-5">
             <section class="col-sm-6 section1">
                 <?php foreach ($resultado_select as $row) : ?>
-                    <div class="alert alert-<?php if ($row["color"] == "azul") {
-                                                echo "primary";
-                                            } elseif ($row["color"] == "verde") {
-                                                echo "success";
-                                            } else {
-                                                echo "danger";
-                                            }
-                                            ?>" role="alert">
-                        <?= $row["usuario"] . " : " . $row["color"] ?>
+                    <div class="row alert" style="color: white; background-color:<?= $row["color"] ?>">
+                        <div class="col-sm-9 barra">
+
+                            <?= $row["usuario"] . " : " . $row["color_user"] ?>
+                        </div>
+                        <div class="col-sm-3 text-end under">
+                            <a href="index.php?id_colores=<?= $row["id_colores"] ?>&usuario=<?= $row["usuario"] ?>">✏️</a>
+                            <a href="delete.php?id_colores=<?= $row["id_colores"] ?>">🗑️</a>
+                        </div>
                     </div>
                 <?php endforeach ?>
 
             </section>
             <section class="col-sm-6 section2">
-                <form method="post">
-                    <div class="mb-3">
-                        <label for="usuario" class="form-label">Usuario</label>
-                        <input type="text" name="usuario" class="form-control" id="usuario" aria-describedby="usuario">
-                    </div>
-                    <div class="mb-3">
-                        <label for="color" class="form-label">Color:</label>
-                        <select name="color" id="color">
-                            <option value="azul" selected>Azul</option>
-                            <option value="verde">Verde</option>
-                            <option value="vermelho">Vermelho</option>
-                            <option value="negro">Negro</option>
-                            <option value="amarelo">Amarelo</option>
-                        </select>
-                    </div>
-                    <div class="row gap-3">
-                        <button type="submit" class=" col btn btn-primary">Submit</button>
-                        <button type="reset" class=" col btn btn-danger">Cancel</button>
-                    </div>
-                </form>
 
+                <!-- =====================METHOD GET================== -->
+                <?php if ($_GET) : ?>
+
+                    <form method="GET" action="update.php">
+                        <h4>get</h4>
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label">Usuario</label>
+                            <input type="text" name="usuario" class="form-control" id="usuario" aria-describedby="usuario" value="<?=$_GET ['usuario']?>">
+                            <input type="hidden" name="id_colores" value="<?=$_GET ['id_colores']?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="color" class="form-label">Color:</label>
+                            <select name="color" id="color">
+                                <option value="blue" selected>Azul</option>
+                                <option value="green">Verde</option>
+                                <option value="red">Vermelho</option>
+                                <option value="black">Negro</option>
+                                <option value="yellow">Amarelo</option>
+                            </select>
+                        </div>
+                        <div class="row gap-3">
+                            <button type="submit" class=" col btn btn-primary">Submit</button>
+                            <button type="reset" class=" col btn btn-danger">Cancel</button>
+                        </div>
+                        <div class="my-3">
+                            <p class="text-center">
+                            <a href="index.php">Refresh</a>
+                            </p>
+                    </form>
+                <?php endif ?>
+
+
+                <?php if (!$_GET) : ?>
+                    <form method="post">
+                        <h4>post</h4>
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label">Usuario</label>
+                            <input type="text" name="usuario" class="form-control" id="usuario" aria-describedby="usuario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="color" class="form-label">Color:</label>
+                            <select name="color" id="color">
+                                <option value="blue" selected>Azul</option>
+                                <option value="green">Verde</option>
+                                <option value="red">Vermelho</option>
+                                <option value="black">Negro</option>
+                                <option value="yellow">Amarelo</option>
+                            </select>
+                        </div>
+                        <div class="row gap-3">
+                            <button type="submit" class=" col btn btn-primary">Submit</button>
+                            <button type="reset" class=" col btn btn-danger">Cancel</button>
+                        </div>
+                    </form>
+                <?php endif ?>
 
             </section>
         </div>

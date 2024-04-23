@@ -7,3 +7,9 @@
     height: 100px;
     background-color: brown;
 } */
+p > a{
+    text-decoration: none;
+}
+.under > a{
+    text-decoration: none;
+}
